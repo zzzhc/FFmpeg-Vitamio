@@ -11,7 +11,7 @@ echo " |___/  /_/   \__/   \__,_/  /_/ /_/ /_/  /_/   \____/      "
 
 DEST=`pwd`/build/android
 SOURCE=`pwd`
-SSL=$SOURCE/../openssl
+SSL=$SSL
 
 
 TOOLCHAIN=/tmp/vitamio
