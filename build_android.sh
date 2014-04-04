@@ -116,8 +116,8 @@ esac
 
 if [ "$version_type" = "online" ]; then
   FFMPEG_FLAGS_COMMON="--target-os=linux \
-    --enable-cross-compile \
     --cross-prefix=$CROSS_PREFIX \
+    --enable-cross-compile \
     --enable-version3 \
     --enable-shared \
     --disable-static \
@@ -146,6 +146,8 @@ if [ "$version_type" = "online" ]; then
     --enable-protocol=rtp \
     --enable-protocol=mmst \
     --enable-protocol=mmsh \
+    --enable-protocol=crypto \
+    --enable-protocol=hls \
     --enable-demuxer=hls \
     --enable-demuxer=mpegts \
     --enable-demuxer=mpegtsraw \
