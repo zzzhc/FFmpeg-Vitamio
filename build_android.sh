@@ -40,8 +40,10 @@ version_type="$2"
 function arm_toolchain()
 {
   export CROSS_PREFIX=arm-linux-androideabi-
-  $ANDROID_NDK/build/tools/make-standalone-toolchain.sh --toolchain=${CROSS_PREFIX}4.8 \
-    --system=$HOST_SYSTEM --install-dir=$TOOLCHAIN
+  if [ ! -d $TOOLCHAIN ]; then
+    $ANDROID_NDK/build/tools/make-standalone-toolchain.sh --toolchain=${CROSS_PREFIX}4.8 \
+      --system=$HOST_SYSTEM --install-dir=$TOOLCHAIN
+  fi
 }
 
 function x86_toolchain()
@@ -77,6 +79,7 @@ else
   echo "Build Android arm ffmpeg\n"
   arm_toolchain
   TARGET="neon armv7 vfp armv6"
+  #TARGET="neon"
 fi
 export PATH=$TOOLCHAIN/bin:$PATH
 export CC="$CCACHE ${CROSS_PREFIX}gcc"
@@ -187,19 +190,41 @@ else
     --disable-doc \
     --disable-avdevice \
     --disable-postproc \
-    --disable-encoders \
-    --disable-muxers \
-    --enable-muxer=mp4 \
-    --disable-devices \
-    --disable-demuxer=sbg \
-    --disable-demuxer=dts \
-    --disable-parser=dca \
-    --disable-decoder=dca \
-    --disable-decoder=svq3 \
     --disable-debug \
     --enable-network \
+
+    --disable-everything \
+
+    --enable-demuxer=hls \
+    --enable-demuxer=aac \
+    --enable-demuxer=mp3 \
+    --enable-demuxer=mpegts \
+    --enable-demuxer=mpegtsraw \
+
+    --enable-decoder=aac \
+    --enable-decoder=aac_latm \
+    --enable-decoder=mp3 \
+
+    --enable-parser=aac \
+    --enable-parser=aac_latm \
+    --enable-parser=mpegaudio \
+
+    --enable-filters \
+
+    --enable-protocol=file \
+    --enable-protocol=http \
+    --enable-protocol=https \
+    --enable-protocol=httpproxy \
+    --enable-protocol=hls \
+
     --enable-asm"
 fi
+
+# 不确定哪些filter是必需的
+#    --enable-filter=removelogo \
+#    --enable-filter=scale \
+#    --enable-filter=aresample \
+#    --enable-filter=copy \
 
 # --disable-decoder=ac3 --disable-decoder=eac3 --disable-decoder=mlp \
 
@@ -292,7 +317,7 @@ fi
     find . -name "*.o" -type f -delete
     make -j4 || exit 1
 
-    rm libavcodec/log2_tab.o libavformat/log2_tab.o libswresample/log2_tab.o
+    rm -f libavcodec/log2_tab.o libavformat/log2_tab.o libswresample/log2_tab.o
 
     case $CROSS_PREFIX in
       arm-*)
@@ -317,3 +342,4 @@ fi
     echo "----------------------$version -----------------------------"
 
   done
+
